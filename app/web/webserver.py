@@ -12,7 +12,7 @@ def recieve_payment_vietqr():
         data_detail = data['data']
         userid = 0
         try:
-            int(data_detail['description'].split('Start')[1].split('End')[0])
+            userid = int(data_detail['description'].split('Start')[1].split('End')[0])
             asyncio.run_coroutine_threadsafe(Logs('[VN PAYMENT]', f'Recieve **{format(data_detail['amount'],',')} VND** from <@{userid}>', 'yellow'), discord_bot.loop)
         except Exception as e:
             print(e)
