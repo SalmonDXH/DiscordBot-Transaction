@@ -48,20 +48,6 @@ async def donate_vn(interaction: discord.Interaction):
     embed.set_image(url=image)
     await interaction.response.send_message(embed=embed)
 
-@discord_bot.tree.command(name='check_guild')
-async def get_guild(interaction: discord.Interaction, guild_id:str):
-    guild = int(guild_id.strip())
-    if guild is None:
-        await interaction.response.send_message(content='None')
-    await interaction.response.send_message(content='Yes')
-
-@discord_bot.tree.command(name='test_logs')
-async def test_logs(interaction: discord.Interaction, logs:str):
-    try:
-        await Logs('Test',logs,'green')
-        await interaction.response.send_message(content='Success')
-    except:
-        await interaction.response.send_message(content='Error')
 
 
 async def give_role_to_user(guild_id, user_id, role_id):
