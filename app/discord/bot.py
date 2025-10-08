@@ -1,8 +1,10 @@
 import discord
+import os
 from discord.ext import commands
 from discord import app_commands
 from app.transaction.vietqr import VietQR
 from app.utils.color_config import CommandEmbedColor
+from dotenv import load_dotenv
 
 
 def embed_builder(title,desc,color):
@@ -13,6 +15,8 @@ class DiscordBot(commands.Bot):
     def __init__(self):
         intents = discord.Intents.default()
         intents.guilds = True
+        load_dotenv()
+        self.logs_channel = int(os.getenv('logs_channel').strip())
         
         super().__init__(
             command_prefix='!!!!!!!',
@@ -51,6 +55,14 @@ async def get_guild(interaction: discord.Interaction, guild_id:str):
         await interaction.response.send_message(content='None')
     await interaction.response.send_message(content='Yes')
 
+@discord_bot.tree.command(name='test_logs')
+async def test_logs(interaction: discord.Interaction, logs:str):
+    try:
+        await Logs('Test',logs,'green')
+        await interaction.response.send_message(content='Success')
+    except:
+        await interaction.response.send_message(content='Error')
+
 
 async def give_role_to_user(guild_id, user_id, role_id):
     guild = discord_bot.get_guild(guild_id)
@@ -74,5 +86,20 @@ async def give_role_to_user(guild_id, user_id, role_id):
     try:
         await member.add_roles(role)
         print(f"✅ Gave role '{role.name}' to {member.display_name}")
+        await Logs('[ROLE] SUCCESS', f'Successfully give <@&{role_id}> to <@{member.id}>', 'green')
     except Exception as e:
+        await Logs('[ROLE] FAIL', f'Error during giving <@&{role_id}> to <@{member.id}>', 'red')
         print(f"❌ Failed to give role: {e}")
+    
+
+async def Logs(title:str,logs:str,color:str):
+    try:
+        logs_channel = discord_bot.get_channel(discord_bot.logs_channel)
+        if not logs_channel:
+            print('Channel not found')
+            return
+        embed = embed_builder(title,logs,color)
+        await logs_channel.send(embed=embed)
+    except Exception as e:
+        print(e)
+    pass

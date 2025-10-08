@@ -2,6 +2,7 @@ from app.discord.bot import discord_bot,give_role_to_user
 from dotenv import load_dotenv
 import os, asyncio
 from flask import Flask, request, jsonify
+from app.discord.bot import Logs
 
 app_server= Flask(__name__)
 @app_server.route("/casso-webhook", methods=["POST"])
@@ -9,8 +10,12 @@ def recieve_payment_vietqr():
     try:
         data = request.json
         data_detail = data['data']
+        userid = int(data_detail['description'].split('Start')[1].split('End')[0])
+        try:
+            asyncio.run_coroutine_threadsafe(Logs('[VN PAYMENT]', f'Recieve **{format(data_detail['amount'],',')} VND** from <@{userid}>', 'yellow'), discord_bot.loop)
+        except Exception as e:
+            print(e)
         if data_detail['amount'] >= 100000 and 'Orca' in data_detail['description']:
-            userid = int(data_detail['description'].split('Start')[1].split('End')[0])
             load_dotenv()
             main_guild = int(os.getenv('main_guild').strip())
             role_id = int(os.getenv('donate_role').strip())
@@ -24,7 +29,6 @@ def recieve_payment_vietqr():
 def test():
     return jsonify({"status": "ok"}), 200
 
-app_server= Flask(__name__)
 @app_server.route("/paypal-webhook", methods=["POST"])
 def recieve_payment_paypal():
     try:
