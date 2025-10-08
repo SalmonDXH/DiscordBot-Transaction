@@ -50,11 +50,11 @@ async def donate_vn(interaction: discord.Interaction):
 
 
 
-async def give_role_to_user(guild_id, user_id, role_id):
+async def give_role_to_user(guild_id, user_id, role_id, channel_id):
     guild = discord_bot.get_guild(guild_id)
     if guild is None:
         print("❌ Guild not found!")
-        await Logs('[ROLE] FAIL', f'Guild not found!', 'red')
+        await Logs('[ROLE] FAIL', f'Guild not found!', 'red', channel_id)
         return
 
     member = guild.get_member(user_id)
@@ -63,27 +63,29 @@ async def give_role_to_user(guild_id, user_id, role_id):
             member = await guild.fetch_member(user_id)
         except:
             print("❌ Member not found in guild!")
-            await Logs('[ROLE] FAIL', f'Member not in guild', 'red')
+            await Logs('[ROLE] FAIL', f'Member not in guild', 'red', channel_id)
             return
 
     role = guild.get_role(role_id)
     if role is None:
         print("❌ Role not found!")
-        await Logs('[ROLE] FAIL', f'Role not found', 'red')
+        await Logs('[ROLE] FAIL', f'Role not found', 'red', channel_id)
         return
 
     try:
         await member.add_roles(role)
         print(f"✅ Gave role '{role.name}' to {member.display_name}")
-        await Logs('[ROLE] SUCCESS', f'Successfully give <@&{role_id}> to <@{member.id}>', 'green')
+        await Logs('[ROLE] SUCCESS', f'Successfully give <@&{role_id}> to <@{member.id}>', 'green',channel_id)
     except Exception as e:
-        await Logs('[ROLE] FAIL', f'Error during giving <@&{role_id}> to <@{member.id}>', 'red')
+        await Logs('[ROLE] FAIL', f'Error during giving <@&{role_id}> to <@{member.id}>', 'red',channel_id)
         print(f"❌ Failed to give role: {e}")
     
 
-async def Logs(title:str,logs:str,color:str):
+async def Logs(title:str,logs:str,color:str, channel_id=0):
     try:
         logs_channel = discord_bot.get_channel(discord_bot.logs_channel)
+        if channel_id != 0:
+            logs_channel = discord_bot.get_channel(channel_id)
         if not logs_channel:
             print('Channel not found')
             return
