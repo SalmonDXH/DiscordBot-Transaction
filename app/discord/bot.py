@@ -68,6 +68,7 @@ async def give_role_to_user(guild_id, user_id, role_id):
     guild = discord_bot.get_guild(guild_id)
     if guild is None:
         print("❌ Guild not found!")
+        await Logs('[ROLE] FAIL', f'Guild not found!', 'red')
         return
 
     member = guild.get_member(user_id)
@@ -76,11 +77,13 @@ async def give_role_to_user(guild_id, user_id, role_id):
             member = await guild.fetch_member(user_id)
         except:
             print("❌ Member not found in guild!")
+            await Logs('[ROLE] FAIL', f'Member not in guild', 'red')
             return
 
     role = guild.get_role(role_id)
     if role is None:
         print("❌ Role not found!")
+        await Logs('[ROLE] FAIL', f'Role not found', 'red')
         return
 
     try:

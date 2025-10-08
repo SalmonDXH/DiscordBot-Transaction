@@ -16,6 +16,7 @@ def recieve_payment_vietqr():
             asyncio.run_coroutine_threadsafe(Logs('[VN PAYMENT]', f'Recieve **{format(data_detail['amount'],',')} VND** from <@{userid}>', 'yellow'), discord_bot.loop)
         except Exception as e:
             print(e)
+        
         if data_detail['amount'] >= 100000 and 'Orca' in data_detail['description']:
             load_dotenv()
             main_guild = int(os.getenv('main_guild').strip())
